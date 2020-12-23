@@ -1,0 +1,219 @@
+import XMonad
+
+import qualified Data.Map as M
+import qualified XMonad.StackSet as W
+import System.IO (hPutStrLn)
+import XMonad.Config.Desktop
+
+--actions
+import XMonad.Actions.MouseResize
+import XMonad.Actions.NoBorders
+import XMonad.Actions.Promote
+
+-- hooks
+import XMonad.Hooks.DynamicLog (dynamicLogWithPP, wrap, xmobarPP, xmobarColor, shorten, PP(..))
+import XMonad.Hooks.SetWMName
+import XMonad.Hooks.FadeInactive
+import XMonad.Hooks.EwmhDesktops
+import XMonad.Hooks.WorkspaceHistory (workspaceHistoryHook)
+import XMonad.Hooks.ManageDocks (avoidStruts,manageDocks,ToggleStruts(..))
+
+-- utils
+import XMonad.Util.SpawnOnce
+import XMonad.Util.Run
+import XMonad.Util.EZConfig(additionalKeysP)
+import XMonad.Util.Run(spawnPipe)
+
+--layout
+import XMonad.Layout.ResizableTile
+import XMonad.Layout.Tabbed
+import XMonad.Layout.Cross
+import XMonad.Layout.SimplestFloat
+import XMonad.Layout.Fullscreen
+import XMonad.Layout.Dwindle
+import XMonad.Layout.TwoPane
+import XMonad.Layout.BinarySpacePartition
+
+-- layout modifiers
+import XMonad.Layout.Renamed
+import XMonad.Layout.NoBorders
+import XMonad.Layout.LayoutModifier
+import XMonad.Layout.Spacing
+import XMonad.Layout.Simplest
+import XMonad.Layout.WindowNavigation
+import XMonad.Layout.SubLayouts
+import XMonad.Layout.LimitWindows (limitWindows, increaseLimit, decreaseLimit)
+import qualified XMonad.Layout.ToggleLayouts as T (toggleLayouts, ToggleLayout(Toggle))
+import XMonad.Layout.MultiToggle (mkToggle, single, EOT(EOT), (??))
+import XMonad.Layout.MultiToggle.Instances (StdTransformers(NBFULL, MIRROR, NOBORDERS))
+import XMonad.Layout.WindowArranger (windowArrange)
+import qualified XMonad.Layout.MultiToggle as MT (Toggle(..))
+
+-- MyVars
+
+myBorderWidth :: Dimension
+myBorderWidth = 1  
+myBrowser = "brave"
+myNormColor = "#282c34"  
+myFocusColor = "#82AAFF"  
+myTerminal = "alacritty"
+
+-- startup apps
+myStartupHook :: X ()
+myStartupHook = do
+    spawnOnce "nitrogen --restore &"
+    spawnOnce "picom &"
+    spawnOnce "dunst &"
+    spawnOnce "trayer --edge top --align right --widthtype request --padding 5 --SetDockType true --SetPartialStrut true --expand true --monitor 1 --transparent true --alpha 0 --tint 0x000000 --height 13 &"
+    setWMName "LG3D"
+
+
+-- Keys
+myKeys :: [(String, X ())]
+myKeys = 
+    -- xmonad config
+    [ ("M-C-r", spawn "xmonad --recompile") 
+    , ("M-S-r", spawn "xmonad --restart")  
+    -- myApps 
+    ,  ("M-b",          spawn $ myBrowser)
+    , ("M-<Return>",    spawn $ myTerminal)
+    , ("M-<F1>",        spawn $ myTerminal ++ " -e ranger")
+    , ("M-<F8>",        spawn "discord")
+    , ("M-d",           spawn "rofi -show drun -icon-theme \"Papirus\" -show-icons")
+    , ("M-q",           kill)
+    -- Layout
+    , ("M-f", sendMessage (MT.Toggle NBFULL) >> sendMessage ToggleStruts) 
+    , ("M-<Space>", promote)
+
+    , ("M-<Tab>", sendMessage NextLayout)
+    , ("M-n", sendMessage $ MT.Toggle NOBORDERS) 
+    -- Media settings
+    , ("<XF86AudioPlay>", spawn ("playerctl play"))
+    , ("<XF86AudioPrev>", spawn ("playerctl prev"))
+    , ("<XF86AudioNext>", spawn ("playerctl next"))
+    , ("<XF86AudioStop>", spawn ("playerctl pause"))
+
+    -- MPC specific
+    , ("M-<XF86AudioPlay>", spawn ("mpc play"))
+    , ("M-<XF86AudioPrev>", spawn ("mpc prev"))
+    , ("M-<XF86AudioNext>", spawn ("mpc next"))
+    , ("M-<XF86AudioStop>", spawn ("mpc pause"))
+    , ("M-<XF86AudioLowerVolume>", spawn "mpc volume -5")
+    , ("M-<XF86AudioRaiseVolume>", spawn "mpc volume +5")
+
+    -- Media Global Settings
+    , ("<XF86AudioMute>",   spawn "pactl set-sink-mute @DEFAULT_SINK@ toggle ")  
+    , ("<XF86AudioLowerVolume>", spawn "pactl set-sink-volume @DEFAULT_SINK@ -5%")
+    , ("<XF86AudioRaiseVolume>", spawn "pactl set-sink-volume @DEFAULT_SINK@ +5%")
+
+    ]    
+
+
+mySpacing :: Integer -> l a -> XMonad.Layout.LayoutModifier.ModifiedLayout Spacing l a
+mySpacing i = spacingRaw False (Border i i i i) True (Border i i i i) True
+mySpacing' :: Integer -> l a -> XMonad.Layout.LayoutModifier.ModifiedLayout Spacing l a
+mySpacing' i = spacingRaw True (Border i i i i) True (Border i i i i) True
+
+tall     = renamed [Replace "tall"]
+           $ windowNavigation
+           $ subLayout [] (smartBorders Simplest)
+           $ limitWindows 12
+           $ mySpacing 8
+           $ ResizableTall 1 (3/100) (7/12) []
+
+floats   = renamed [Replace "floats"]
+           $ windowNavigation
+           $ subLayout [] (smartBorders Simplest)
+           $ limitWindows 20 simplestFloat
+
+tabs     = renamed [Replace "tabs"]
+           -- I cannot add spacing to this layout because it will
+           -- add spacing between window and tabs which looks bad.
+           $ tabbed shrinkText myTabTheme
+
+
+
+myTabTheme = def { activeColor         = "#46d9ff"
+                 , inactiveColor       = "#313846"
+                 , activeBorderColor   = "#46d9ff"
+                 , inactiveBorderColor = "#282c34"
+                 , activeTextColor     = "#282c34"
+                 , inactiveTextColor   = "#d0d0d0"
+                 }
+
+myLayoutHook = avoidStruts $ mouseResize $ windowArrange $ T.toggleLayouts floats
+               $ mkToggle (NBFULL ?? NOBORDERS ?? EOT) myDefaultLayout
+             where
+               myDefaultLayout =  smartBorders tall ||| noBorders Full ||| tabs
+                                 
+myManageHook = composeAll
+     [ className =? "Gimp"           --> doFloat
+     , className =? "discord"        --> doShift "9"
+     --, className =? "Brave-browser"  --> doShift "1"
+     ]
+
+windowCount :: X (Maybe String)
+windowCount = gets $ Just . show . length . W.integrate' . W.stack . W.workspace . W.current . windowset
+
+
+myTabConfig = def { activeColor = "#556064"
+                  , inactiveColor = "#2F3D44"
+                  , urgentColor = "#FDF6E3"
+                  , activeBorderColor = "#454948"
+                  , inactiveBorderColor = "#454948"
+                  , urgentBorderColor = "#268BD2"
+                  , activeTextColor = "#80FFF9"
+                  , inactiveTextColor = "#1ABC9C"
+                  , urgentTextColor = "#1ABC9C"
+                  , fontName = "xft:FiraCode Nerd Font Mono:size=10:antialias=true"
+                  }
+
+
+-- myLayoutHook = avoidStruts $
+--       smartBorders tiled
+--   ||| noBorders (tabbed shrinkText myTabConfig) 
+--   ||| Mirror tiled
+--   ||| Spiral L XMonad.Layout.Dwindle.CW (3/2) (11/10)
+--     where
+--         tiled = ResizableTall nmaster delta ratio []
+--         nmaster = 1
+--         ratio   = 6/10
+--         delta   = 3/100
+-- 
+-- myLayoutHook' = avoidStruts
+--             $ T.toggleLayouts (noBorders Full)
+--             $ smartBorders 
+--             $ windowNavigation ( ResizableTall 1 (3/100) (1/2) [])
+-- Fading
+-- myLogHook :: X ()
+-- myLogHook = fadeInactiveLogHook fadeAmount
+--     where fadeAmount = 0.5
+-- 
+-- Main
+
+main = do 
+    xmproc0 <- spawnPipe "xmobar -x 0"
+    xmproc1 <- spawnPipe "xmobar -x 1"
+
+    xmonad $ fullscreenSupport $ desktopConfig
+        { manageHook  = myManageHook <+> manageDocks
+        , terminal    = myTerminal
+        , modMask     = mod4Mask
+        , startupHook = myStartupHook
+        , borderWidth = myBorderWidth
+        , normalBorderColor = myNormColor
+        , focusedBorderColor = myFocusColor
+        , layoutHook  = myLayoutHook
+        , logHook     = workspaceHistoryHook <+> dynamicLogWithPP xmobarPP
+                        { ppOutput = \x -> hPutStrLn xmproc0 x >> hPutStrLn xmproc1 x
+                        , ppTitle = xmobarColor "#82AAFF" "" . shorten 50
+                        , ppCurrent = xmobarColor "green" "" . wrap "[" "]" 
+                        -- , ppCurrent = xmobarColor "#98be65" "" . wrap "[" "]" 
+                        , ppVisible = xmobarColor "green" "" . wrap "" ""
+                        , ppHidden = xmobarColor "#82AAFF" "" -- . wrap "*" ""
+                        , ppUrgent = xmobarColor "#C45500" "" . wrap "!" "!"
+                        , ppExtras = [windowCount]
+                        , ppOrder  = \(ws:l:t:ex) -> [ws,l]++ex++[t]
+                        }
+        } `additionalKeysP` myKeys
+
