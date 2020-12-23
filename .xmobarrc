@@ -1,0 +1,70 @@
+Config { font = "xft:Hack Nerd Font Mono:weight=Bold:pixelsize=11:antialias=true:hinting=true"
+       , additionalFonts = []
+       , borderColor = "black"
+       , border = TopB
+       , bgColor = "black"
+       , fgColor = "grey"
+       , alpha = 255
+       , position = Top
+       , textOffset = -1
+       , iconOffset = -1
+       , lowerOnStart = False
+       , pickBroadest = False
+       , persistent = False
+       , hideOnStart = False
+       -- , iconRoot = "."
+       , allDesktops = True
+       , overrideRedirect = False
+       , iconRoot = "/home/klawx3/.xmonad/xmp/" 
+       , commands = [  -- network activity monitor (dynamic interface resolution)
+                             Run DynNetwork     [ "--template" , "<dev>: <tx>kB/s|<rx>kB/s"
+                             , "--Low"      , "1000"       -- units: B/s
+                             , "--High"     , "5000"       -- units: B/s
+                             , "--low"      , "darkgreen"
+                             , "--normal"   , "darkorange"
+                             , "--high"     , "darkred"
+                             ] 10
+
+        -- cpu activity monitor
+                             , Run MultiCpu       [ "--template" , "\xf108 Cpu: <total0>%|<total1>%"
+                             , "--Low"      , "50"         -- units: %
+                             , "--High"     , "85"         -- units: %
+                             , "--low"      , "darkgreen"
+                             , "--normal"   , "darkorange"
+                             , "--high"     , "darkred"
+                             ] 10
+
+        -- cpu core temperature monitor
+                             , Run CoreTemp       [ "--template" , "Temp: <core0>°C|<core1>°C"
+                             , "--Low"      , "70"        -- units: °C
+                             , "--High"     , "80"        -- units: °C
+                             , "--low"      , "darkgreen"
+                             , "--normal"   , "darkorange"
+                             , "--high"     , "darkred"
+                             ] 50
+                          
+        -- memory usage monitor
+                             , Run Memory         [ "--template" ,"Mem: <usedratio>%"
+                             , "--Low"      , "20"        -- units: %
+                             , "--High"     , "90"        -- units: %
+                             , "--low"      , "darkgreen"
+                             , "--normal"   , "darkorange"
+                             , "--high"     , "darkred"
+                             ] 10
+
+        -- time and date indicator 
+        --   (%F = y-m-d date, %a = day of week, %T = h:m:s time)
+                             , Run Date           "<fc=#ABABAB>%F (%a) %T</fc>" "date" 10
+        -- MPD
+                             , Run MPD ["-t", "<fc=#ee9a00><state></fc>: <artist> - <title>"] 10
+                             , Run DiskU [("/", "hdd: <free> free")] [] 60
+                             , Run UnsafeStdinReader
+                             , Run Alsa "default" "Master" [] 
+                             , Run Com "/home/klawx3/.xmonad/trayer-padding-icon.sh" [] "trayerpad" 20
+                    ]
+       , sepChar = "%"
+       , alignSep = "}{"
+
+
+       , template = "<icon=haskell_20.xpm/>  %UnsafeStdinReader% }{ %alsa:default:Master% | %mpd% | %dynnetwork% | %coretemp% | %multicpu% | %memory% | %disku% | <fc=#ee9a00>%date%</fc> | %trayerpad%"
+       }
