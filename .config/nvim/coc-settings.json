@@ -1,4 +1,4 @@
 {
     "explorer.icon.enableNerdfont": true,
-    "java.home": "/usr/lib/jvm/default-runtime"
+    "java.format.onType.enabled":true
 }

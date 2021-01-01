@@ -181,22 +181,37 @@ window:
 # Font configuration
 font:
   normal:
-    family: FiraCode Nerd Font Mono 
-    style: Retina
+    family: JetBrainsMono Nerd Font 
+    style: Regular
   bold:
-    family: FiraCode Nerd Font Mono
+    family: JetBrainsMono Nerd Font
     style: Bold
 
   italic:
-    family: FiraCode Nerd Font Mono
+    family: JetBrainsMono Nerd Font
     style: Italic
 
   bold_italic:
-    family: FiraCode Nerd Font Mono
+    family: JetBrainsMono Nerd Font
     style: Bold Italic
+  size: 11 
+ #font:
+ #  normal:
+ #    family: JetBrainsMono Nerd Font 
+ #    style: Regular
+ #  bold:
+ #    family: JetBrainsMono Nerd Font
+ #    style: Bold
+ #
+ #  italic:
+ #    family: JetBrainsMono Nerd Font
+ #    style: Italic
+ #
+ #  bold_italic:
+ #    family: JetBrainsMono Nerd Font
+ #    style: Bold Italic
+
   
-  
-  size: 11.5 
 
   # Offset is the extra space around each character. `offset.y` can be thought of
   # as modifying the line spacing, and `offset.x` as modifying the letter spacing.

@@ -327,7 +327,10 @@ bindsym $mod+Shift+a exec ~/.scripts/archwiki brave
 #dmenu config launcher
 bindsym $mod+Shift+s exec ~/.scripts/dmenu_config_launcher
 
-
+#administrive commands
 bindsym $mod+Home exec redshift -O 4000
 bindsym $mod+End exec redshift -x
+
+bindsym $mod+Shift+Delete exec poweroff 
+bindsym $mod+Shift+Insert exec reboot 
 # vim:filetype=i3config
