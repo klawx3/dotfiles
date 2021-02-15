@@ -11,13 +11,13 @@ call plug#begin('~/.vim/plugged')
     Plug 'ryanoasis/vim-devicons'
     Plug 'morhetz/gruvbox'
     Plug 'https://github.com/ap/vim-css-color'
-    Plug 'bling/vim-bufferline'
     Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
     Plug 'neoclide/coc.nvim', {'branch': 'release'}
     Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
     Plug 'puremourning/vimspector'
     Plug 'junegunn/fzf.vim'
     Plug 'jiangmiao/auto-pairs'
+    Plug 'maxmellon/vim-jsx-pretty'
 call plug#end()
 let mapleader=","
 

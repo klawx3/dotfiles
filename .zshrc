@@ -11,6 +11,7 @@ alias config='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
 alias vi="nvim"
 alias vim="nvim"
 alias v="nvim"
+alias pg="ping 8.8.8.8"
 
 alias r="ranger"
 alias mv="mv -i"
@@ -107,6 +108,7 @@ plugins=(
 	zsh-syntax-highlighting
 	zsh-autosuggestions
     virtualenv
+    tmux
 	)
 
 source $ZSH/oh-my-zsh.sh
