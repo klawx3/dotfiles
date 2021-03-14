@@ -274,6 +274,7 @@ exec_always --no-startup-id $HOME/.config/polybar/launch.sh
 exec --no-startup-id "xmodmap -e 'keycode 60 = period colon period colon greater greater'"
 exec --no-startup-id "xmodmap -e 'keycode 59 = 0x002c semicolon 0x002c semicolon less'"
 
+exec --no-startup-id xset r rate 300 50
 ############################
 #Scratch Pad managament
 ############################
