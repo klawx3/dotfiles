@@ -240,7 +240,7 @@ bindsym $mod+Mod1+l exec "i3-msg workspace next_on_output"
 
 #I3-Gaps
 gaps outer 0
-gaps inner 0
+gaps inner 8
 smart_gaps on
 hide_edge_borders smart_no_gaps
 
@@ -249,7 +249,7 @@ hide_edge_borders smart_no_gaps
 
 
 #No windows borders
-for_window [class="^.*"] border pixel 1
+for_window [class="^.*"] border pixel 0
 
 
 # Media player controls
