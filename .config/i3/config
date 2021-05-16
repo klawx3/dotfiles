@@ -303,16 +303,18 @@ exec --no-startup-id nitrogen --restore
 exec_always --no-startup-id picom &
 #Notification Daemon - dunst
 exec_always --no-startup-id dunst
+exec_always --no-startup-id nextcloud
 ##########################
 # Custom Key-bindings
 ##########################
 
 # File-Explorer
 bindsym $mod+F1 exec "alacritty -e ranger" 
+bindsym $mod+F2 exec pcmanfm
 # Nitrogen F10
 bindsym $mod+F10 exec nitrogen
 # Discord
-bindsym $mod+F8 exec discord
+bindsym $mod+F8 exec discord-canary
 #Spotify
 bindsym $mod+F9 exec spotify
 #Joplin

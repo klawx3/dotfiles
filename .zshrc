@@ -6,7 +6,7 @@
 alias ci3="vim ~/.config/i3/config"
 alias cpc="vim ~/.config/picom/picom.conf"
 alias ctt="vim ~/.config/alacritty/alacritty.yml"
-alias sw1="xsetwacom set 'Wacom Intuos BT M Pen stylus' MapToOutput 1920x1080+1920+0"
+alias sw1="xsetwacom set 'Wacom Intuos BT M Pen stylus' MapToOutput 1920x1080+0+0"
 alias config='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
 alias vi="nvim"
 alias vim="nvim"
